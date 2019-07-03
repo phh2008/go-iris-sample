@@ -1,0 +1,3 @@
+context-path: /blog
+server-address: localhost:5050
+static-path: /res

@@ -2,6 +2,9 @@ package main
 
 import (
 	"com.phh/blog/config"
+	"com.phh/blog/repositories"
+	"com.phh/blog/services"
+	"com.phh/blog/utils"
 	"com.phh/blog/web/controller"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -11,6 +14,7 @@ import (
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
+	"time"
 )
 
 var db *gorm.DB
@@ -21,7 +25,7 @@ func init() {
 	cfg = config.Cfg()
 	//加载数据库配置
 	var err error
-	db, err = gorm.Open("mysql", "root:root@/demo?charset=utf8&parseTime=True&loc=Local")
+	db, err = gorm.Open("mysql", "root:root@/myblog?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
@@ -38,6 +42,12 @@ func main() {
 	tmpl := iris.HTML("./web/templates", ".html").
 		Layout("shared/layout.html").
 		Reload(true)
+	tmpl.AddFunc("timeFormat", func(time time.Time, pattern string) string {
+		if pattern == "" {
+			pattern = "yyyy-MM-dd HH:mm:dd"
+		}
+		return utils.FormatTime(time, pattern)
+	})
 	app.RegisterView(tmpl)
 	//静态资源目录
 	app.StaticWeb(cfg.StaticPath, "./web/res")
@@ -63,7 +73,9 @@ func main() {
 	//root context-path
 	root := mvc.New(app.Party(cfg.ContextPath))
 	{
-		root.Register(sess.Start)
+		articleRepo := repositories.NewArticleRepo(db)
+		articleService := services.NewArticleService(articleRepo)
+		root.Register(sess.Start, articleService)
 		//register index
 		root.Handle(new(controller.IndexController))
 		//register users

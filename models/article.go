@@ -20,10 +20,10 @@ type Article struct {
 	Stars     int
 	Comments  int
 	Sn        int
-	CreateId  int
+	CreateId  int `gorm:"column:createId"`
 	Creator   string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt time.Time `gorm:"column:createdAt"`
+	UpdatedAt time.Time `gorm:"column:updatedAt"`
 	State     int8
 }
 

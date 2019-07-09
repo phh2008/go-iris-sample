@@ -5,6 +5,7 @@ import (
 	"com.phh/blog/repositories"
 	"com.phh/blog/services"
 	"com.phh/blog/utils"
+	"com.phh/blog/utils/logger"
 	"com.phh/blog/web/controller"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -14,6 +15,7 @@ import (
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
+	"github.com/rs/zerolog/log"
 	"time"
 )
 
@@ -35,6 +37,10 @@ func init() {
 }
 
 func main() {
+	logger.NewConfig().
+		Level(logger.InfoLevel).
+		OutType(logger.Console).
+		Build()
 	//********************创建iris服务**********************
 	app := iris.New()
 	app.Logger().SetLevel("debug")
@@ -63,7 +69,7 @@ func main() {
 	})
 	app.Use(recover.New())
 	app.Use(func(ctx context.Context) {
-		fmt.Println(">>>>>>:" + cfg.ContextPath + " ,url:" + ctx.RequestPath(false))
+		log.Info().Str("url", ctx.RequestPath(false)).Msg("")
 		ctx.ViewData("ctxPath", cfg.ContextPath)
 		ctx.Next()
 	})

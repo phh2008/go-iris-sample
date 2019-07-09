@@ -6,18 +6,19 @@
             </h4>
             {{range $i,$v := .articles}}
                 <div class="item">
-                    <div class="item-box  layer-photos-demo1 layer-photos-demo">
+                    <div class="item-box">
                         <h3><a href="javascript:void(0)">{{$v.Title}}</a></h3>
                         <h5>发布于：<span>{{timeFormat $v.CreatedAt "yyyy-MM-dd HH:mm:ss"}}</span></h5>
                         <p>{{$v.Content}}</p>
                         <img src="../res/static/images/item.png" alt="">
                     </div>
                     <div class="comment count">
-                        <a href="javascript:;">评论({{$v.Comments}})</a>
-                        <a href="javascript:;" class="like">点赞({{$v.Stars}})</a>
+                        <a href="javascript:;" onclick="comment({{$v.Id}})">评论(<span>{{$v.Comments}}</span>)</a>
+                        <a href="javascript:;" onclick="star({{$v.Id}})">点赞(<span>{{$v.Stars}}</span>)</a>
                     </div>
                 </div>
             {{end}}
         </div>
     </div>
 </div>
+<script src="../res/static/js/index.js"></script>
